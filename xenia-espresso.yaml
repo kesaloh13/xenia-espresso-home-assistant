@@ -1,0 +1,129 @@
+# Installation
+# Copy this file to config/integrations
+# Include the Integration directory in
+# configuration.yaml
+#
+# homeassistant:
+#  # Include packages (all Individual configuration goes here)
+#  packages: !include_dir_named integrations
+
+# Change the URL to your Xenia URL (IP or name)
+input_text:
+  xenia_uri:
+    name: Xenia API URL
+    initial: "http://192.168.1.10/api/v2"
+
+rest_command:
+  xenia_machine_control:
+    url: "{{ states('input_text.xenia_uri') }}/machine/control"
+    method: POST
+    payload: '{"action":"{{ action }}"}'
+    content_type: "application/x-www-form-urlencoded"
+
+switch:
+  - platform: template
+    switches:
+      xenia:
+        friendly_name: "Xenia Power"
+        unique_id: switch.xenia_power
+        value_template: "{{is_state('sensor.xenia_status', 'On') }}"
+        turn_on:
+          service: rest_command.xenia_machine_control
+          data:
+            action: 1
+        turn_off:
+          service: rest_command.xenia_machine_control
+          data:
+            action: 0
+
+sensor:
+  - platform: rest
+    name: "Xenia_JSON_Data"
+    resource_template: "{{ states('input_text.xenia_uri') }}/overview"
+    scan_interval: 1
+    value_template: "1"
+    json_attributes:
+      - "MA_EXTRACTIONS"
+      - "MA_OPERATING_HOURS"
+      # - "MA_CLOCK"
+      - "MA_STATUS"
+      - "BG_SENS_TEMP_A"
+      - "BG_LEVEL_PW_CONTROL"
+      - "PU_SENS_PRESS"
+      - "PU_LEVEL_PW_CONTROL"
+      - "PU_SET_LEVEL_PW_CONTROL"
+      - "SB_SENS_PRESS"
+      - "BB_SENS_TEMP_A"
+      - "BB_LEVEL_PW_CONTROL"
+      - "SB_STATUS"
+  - platform: template
+    sensors:
+      xenia_status:
+        unique_id: sensor.xenia_status
+        friendly_name: Xenia Status
+        value_template: >-
+          {% if state_attr('sensor.xenia_json_data', 'MA_STATUS') == 0 %}
+            Off
+          {% elif state_attr('sensor.xenia_json_data', 'MA_STATUS') == 1 %}
+            On
+          {% elif state_attr('sensor.xenia_json_data', 'MA_STATUS') == 2 %}
+            Eco
+          {% else %}
+            Unknown
+          {% endif %}
+      xenia_extractions:
+        unique_id: sensor.xenia_extractions
+        friendly_name: Xenia Extraktionen
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'MA_EXTRACTIONS') }}"
+      xenia_operating_hours:
+        unique_id: sensor.xenia_operating_hours
+        friendly_name: Xenia Betriebsstunden
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'MA_OPERATING_HOURS') }}"
+      #xenia_clock:
+      #  unique_id: sensor.xeniar_clock
+      #  friendly_name: Xenia Zeit
+      #  value_template: "{% set in = state_attr('sensor.xenia_json_data', 'MA_CLOCK') %}{{ (in / 65536 )| round(0) }}:{{'%02i'%( ((in % 65536) / 256) | round(0))}}:{{'%02i'%(in % 256| round(0))}}"
+      xenia_bg_sens_temp_a:
+        unique_id: sensor.xenia_bg_sens_temp_a
+        friendly_name: Xenia Brühgruppe Temperatur
+        unit_of_measurement: "ºC"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'BG_SENS_TEMP_A') | round(1) }}"
+      xenia_bg_level_pw_control:
+        unique_id: sensor.xeniar_bg_level_pw_control
+        friendly_name: Xenia Brühgruppe Leistung
+        unit_of_measurement: "%"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'BG_LEVEL_PW_CONTROL') }}"
+      xenia_pu_sens_press:
+        unique_id: sensor.xenia_pu_sens_press
+        friendly_name: Xenia Pumpendruck
+        unit_of_measurement: "bar"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'PU_SENS_PRESS')| round(1) }}"
+      xenia_pu_level_pw_control:
+        unique_id: sensor.xenia_pu_level_pw_control
+        friendly_name: Xenia Pumpe Leistung
+        unit_of_measurement: "%"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'PU_LEVEL_PW_CONTROL') }}"
+      xenia_pu_set_level_pw_control:
+        unique_id: sensor.xenia_pu_set_level_pw_control
+        friendly_name: Xenia Pumpe Leistung ?
+        unit_of_measurement: "%"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'PU_SET_LEVEL_PW_CONTROL') }}"
+      xenia_sb_sens_press:
+        unique_id: sensor.xenia_sb_sens_press
+        friendly_name: Xenia Dampfboiler Druck
+        unit_of_measurement: "bar"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'SB_SENS_PRESS') | round(1)}}"
+      xenia_bb_sens_temp_a:
+        unique_id: sensor.xeniar_bb_sens_temp_a
+        friendly_name: Xenia Brühkessel Temperatur
+        unit_of_measurement: "ºC"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'BB_SENS_TEMP_A') | round(1)}}"
+      xenia_bb_level_pw_control:
+        unique_id: sensor.xenia_bb_level_pw_control
+        friendly_name: Xenia Brühkessel Leistung
+        unit_of_measurement: "%"
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'BB_LEVEL_PW_CONTROL') }}"
+      xenia_sb_status:
+        unique_id: sensor.xeniar_sb_status
+        friendly_name: Xenia Dampfboiler Status
+        value_template: "{{ state_attr('sensor.xenia_json_data', 'SB_STATUS') }}"
