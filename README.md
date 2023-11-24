@@ -1,4 +1,4 @@
-# Xenia Coffee Home Assistant
+# Xenia Espresso Home Assistant
 ## Overview
 This integration adds an on/off switch for the Xenia Coffee Machine and collects some sensors.
 
@@ -6,9 +6,9 @@ This integration adds an on/off switch for the Xenia Coffee Machine and collects
 Best would be to use the Visual Studio Code Server add-on for configuration.
 
 1. Create a config/integrations directory if it does not already exist.
-2. Copy the xenia_coffee.yaml file to config/integrations
-3. Change the URL to the Name/IP of your Xenia IP Address in xenia-coffee.yaml (Line 14)
-4. Include "xenia_coffee.yaml" by adding the following lines to your "configuration.yaml":
+2. Copy the xenia_espresso.yaml file to config/integrations
+3. Change the URL to the Name/IP of your Xenia IP Address in xenia-espresso.yaml (Line 14)
+4. Include "xenia_espresso.yaml" by adding the following lines to your "configuration.yaml":
 
 ```yaml
 homeassistant:
