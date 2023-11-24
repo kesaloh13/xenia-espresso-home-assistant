@@ -7,7 +7,8 @@ Best would be to use the Visual Studio Code Server add-on for configuration.
 
 1. Create a config/integrations directory if it does not already exist.
 2. Copy the xenia-expresso.yaml file to config/integrations
-3. Include "xenia.yaml" by adding the following lines to your "configuration.yaml":
+3. Change the URL to the Name/IP of your Xenia IP Address in xenia-expresso.yaml (Line 14)
+4. Include "xenia-espresso.yaml" by adding the following lines to your "configuration.yaml":
 
 ```yaml
 homeassistant:
