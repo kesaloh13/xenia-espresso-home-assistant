@@ -1,4 +1,4 @@
-# Xenia Expresso Home Assistant
+# Xenia Espresso Home Assistant
 ## Overview
 This integration adds an on/off switch for the Xenia Espresso Machine and collects some sensors.
 
